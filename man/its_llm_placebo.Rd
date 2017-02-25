@@ -4,7 +4,7 @@
 \alias{its_llm_placebo}
 \title{ITS Placebo Estimates}
 \usage{
-its_llm_placebo(df, rvar, outcome, trend = NULL, bw, donut = 0,
+its_llm_placebo(df, rvar, outcome, trend = "none", bwL, bwR, donut = 0,
   nsim = 200)
 }
 \arguments{
@@ -16,11 +16,11 @@ its_llm_placebo(df, rvar, outcome, trend = NULL, bw, donut = 0,
 
 \item{trend}{can be 'lin' or 'quad' (linear or quadratic)}
 
-\item{bw}{bandwidth selection on the scale of the \code{rvar}}
-
 \item{donut}{length of the period in after the cutpoint that is not used for the estimation}
 
 \item{nsim}{number of simulations to run}
+
+\item{bw}{bandwidth selection on the scale of the \code{rvar}}
 }
 \description{
 \code{its_llm_placebo} gives a vector of placebo estimates
@@ -30,6 +30,12 @@ tbd.
 }
 \examples{
  \dontrun{
+
+  	eventmonth <- -12:12
+  	treat <- as.numeric(eventmonth >= 0)
+  	y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
+  	df <- data.frame(y=y, eventmonth=eventmonth)
+  	its_llm_placebo(df, rvar="eventmonth", outcome="y", bwL=2,bwR=2, donut=0) 		
 
 }
 

@@ -15,13 +15,13 @@
 #' 
 #' @examples 
 #'  \dontrun{
-#'		eventmonth <- sort(c(0,runif(1000,-1,1)))
-#' 		treat <- as.numeric(eventmonth >= 0)
-#' 		y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
-#' 		
-#'      df <- data.frame(y=y, eventmonth=eventmonth)
+#'		
+#'   	eventmonth <- -12:12
+#'   	treat <- as.numeric(eventmonth >= 0)
+#'   	y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
+#'   	df <- data.frame(y=y, eventmonth=eventmonth)
+#'   	its_llm(df, rvar="eventmonth", outcome="y", bwL=2,bwR=2, donut=0) 		
 #' 
-#' 		its_llm(df, rvar="eventmonth", outcome="y", trend='lin', bw=0.25)
 #' 		}
 #' 
 #' @references 
@@ -29,11 +29,12 @@
 #' 
 #' 
 #' @export
-its_llm <- function(df, rvar, outcome, trend="none", bw=Inf, donut=0){
+its_llm <- function(df, rvar, outcome, trend="none", bwL=Inf, bwR=Inf, donut=0){
+	df <- as.data.frame(df)
 	df <- df[order(df[,rvar]),]
 	make_donut_df(df, rvar=rvar, donut=donut)
 	df$treat <- as.numeric(df[,rvar]>=0) 
-	df$inSample <- (-bw <= df[,rvar]) & (df[,rvar] <= (donut+bw))
+	df$inSample <- (-bwL <= df[,rvar]) & (df[,rvar] <= (donut+bwR))
 	spec <- paste(outcome, "~ treat",sep="")
 	if ( trend=="lin" ) spec <- paste(outcome, " ~ treat * ",rvar, sep="")
 	if ( trend=="quad" ) spec <- paste(outcome, " ~ treat * (", rvar, " + I(", rvar, ")^2)", sep="")

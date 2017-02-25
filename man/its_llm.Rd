@@ -4,7 +4,8 @@
 \alias{its_llm}
 \title{ITS Estimates via Local Linear Regression}
 \usage{
-its_llm(df, rvar, outcome, trend = "none", bw = Inf, donut = 0)
+its_llm(df, rvar, outcome, trend = "none", bwL = Inf, bwR = Inf,
+  donut = 0)
 }
 \arguments{
 \item{df}{(required) \code{data.frame} containing all variables}
@@ -15,9 +16,9 @@ its_llm(df, rvar, outcome, trend = "none", bw = Inf, donut = 0)
 
 \item{trend}{can be 'lin' or 'quad' (linear or quadratic)}
 
-\item{bw}{bandwidth selection on the scale of the \code{rvar}}
-
 \item{donut}{length of the period in after the cutpoint that is not used for the estimation}
+
+\item{bw}{bandwidth selection on the scale of the \code{rvar}}
 }
 \description{
 \code{its_llm} Estimates change in time series via local linear regression
@@ -27,13 +28,13 @@ tbd.
 }
 \examples{
  \dontrun{
-	eventmonth <- sort(c(0,runif(1000,-1,1)))
-		treat <- as.numeric(eventmonth >= 0)
-		y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
-		
-     df <- data.frame(y=y, eventmonth=eventmonth)
+	
+  	eventmonth <- -12:12
+  	treat <- as.numeric(eventmonth >= 0)
+  	y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
+  	df <- data.frame(y=y, eventmonth=eventmonth)
+  	its_llm(df, rvar="eventmonth", outcome="y", bwL=2,bwR=2, donut=0) 		
 
-		its_llm(df, rvar="eventmonth", outcome="y", trend='lin', bw=0.25)
 		}
 
 }

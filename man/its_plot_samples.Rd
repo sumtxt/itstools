@@ -4,7 +4,7 @@
 \alias{its_plot_samples}
 \title{Plots ITS Samples}
 \usage{
-its_plot_samples(df, rvar, outcome, bw, donut)
+its_plot_samples(df, rvar, outcome, bwL, bwR, donut)
 }
 \arguments{
 \item{df}{(required) \code{data.frame} containing all variables}
@@ -13,9 +13,9 @@ its_plot_samples(df, rvar, outcome, bw, donut)
 
 \item{outcome}{(required) the outcome variable in \code{df}}
 
-\item{bw}{bandwidth selection on the scale of the \code{rvar}}
-
 \item{donut}{length of the period in after the cutpoint that is not used for the estimation}
+
+\item{bw}{bandwidth selection on the scale of the \code{rvar}}
 }
 \description{
 \code{its_plot_samples} ...
@@ -26,11 +26,11 @@ tbd.
 \examples{
  \dontrun{
 
-  eventmonth <- sort(c(0,runif(1000,-1,1)))
+  eventmonth <- -12:12
   treat <- as.numeric(eventmonth >= 0)
   y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
   df <- data.frame(y=y, eventmonth=eventmonth)
-  its_plot_samples(df, rvar="eventmonth", outcome="y", bw=0.25, donut=0)
+  its_plot_samples(df, rvar="eventmonth", outcome="y", bwL=2,bwR=2, donut=0)
 
 }
 

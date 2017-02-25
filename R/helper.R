@@ -5,7 +5,6 @@ lmHC <- function(..., HC="HC3", var='treat', estimates=TRUE){
 	else return(m)
 	}
 
-
 get_lmHC_est <- function(m,var){
 	est <- m[rownames(m)==var,'Estimate'] 
 	se <- m[rownames(m)==var,'Std. Error'] 
@@ -23,11 +22,21 @@ make_donut_df <- function(df, rvar, donut){
 	return(df)
 	}
 
-
-make_permut_set <- function(df, rvar, bw, donut){
+make_permut_set <- function(df, rvar, bwL, bwR, donut){
 	minleft <- min(df[,rvar])
-	placeboL <- minleft + bw 
-	placeboR <- 0-bw-donut
+	placeboL <- minleft + bwL 
+	placeboR <- 0-bwR-donut
 	permutset <- df[,rvar][(df[,rvar] >= placeboL) & (df[,rvar] < placeboR)]
 	return(permutset)
 	}
+
+# Identical to the Welch's t-test implement via t.test(..., var.equal=FALSE)
+welch_test_2sided <- function(mx,my,stderrx,stderry,nx,ny){
+    mu <- 0
+    stderr <- sqrt(stderrx^2 + stderry^2)
+    df <- stderr^4/(stderrx^4/(nx-1) + stderry^4/(ny-1))	
+    tstat <- (mx - my - mu)/stderr
+	pval <- 2 * pt(-abs(tstat), df)
+    res <- data.frame(diff=mx - my, diff.se=stderr, diff.pval=pval, diff.tstat=tstat)
+    return(res)
+    }

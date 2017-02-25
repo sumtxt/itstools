@@ -15,11 +15,11 @@
 #' @examples 
 #'  \dontrun{
 #' 
-#'   eventmonth <- sort(c(0,runif(1000,-1,1)))
+#'   eventmonth <- -12:12
 #'   treat <- as.numeric(eventmonth >= 0)
 #'   y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
 #'   df <- data.frame(y=y, eventmonth=eventmonth)
-#'   its_plot_samples(df, rvar="eventmonth", outcome="y", bw=0.25, donut=0)
+#'   its_plot_samples(df, rvar="eventmonth", outcome="y", bwL=2,bwR=2, donut=0)
 #' 
 #' }
 #' 
@@ -28,15 +28,16 @@
 #' 
 #' 
 #' @export
-its_plot_samples <- function(df, rvar, outcome, bw, donut){
-	pset <- make_permut_set(df, rvar, bw,donut)
+its_plot_samples <- function(df, rvar, outcome, bwL, bwR, donut){
+	df <- as.data.frame(df)
+	pset <- make_permut_set(df, rvar, bwL, bwR, donut)
 	df_ <- make_donut_df(df, rvar=rvar, donut=donut)
-	sset <- df_[ -bw <= df_[,rvar] & df_[,rvar] <= (donut+bw),rvar]
+	sset <- df_[ -bwL <= df_[,rvar] & df_[,rvar] <= (donut+bwR),rvar]
 	plot(df[,rvar],df[,outcome], type='n', xlab=rvar, ylab=outcome)
 	abline(v=0, col='blue')
-	abline(v=bw+donut,lty=2, col='red')
+	abline(v=bwR+donut,lty=2, col='red')
 	abline(v=donut,lty=2, col='blue') 
-	abline(v=-bw,lty=2, col='red')
+	abline(v=-bwL,lty=2, col='red')
 	points(df[,rvar],df[,outcome], , pch=20, col='grey')
 	points(df[df[,rvar] %in% pset,rvar], 
 		df[df[,rvar] %in% pset,outcome], col='blue', pch=4)

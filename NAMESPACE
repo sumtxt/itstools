@@ -3,6 +3,7 @@
 export(eventrank)
 export(its_llm)
 export(its_llm_placebo)
+export(its_loess)
 export(its_plot_samples)
 importFrom(lmtest,coeftest)
 importFrom(sandwich,vcovHC)
