@@ -1,30 +1,28 @@
-#' Creates a vector of ranks from the left and right of a cutoff 
+#' Creates a vector of ranks from the left and right of a cutpoint 
 #' 
 #' @param x a vector to be ranked
-#' @param cutoff a scalar number used as cutoff (zero by default)
+#' @param cutpoint a scalar number used as cut-point (zero by default)
 #' 
-#' @return vector of ranks. If an element in x is equal to the cutoff, it is assigned '0'. 
+#' @return vector of ranks. If an element in x is equal to the cut-point, it is assigned '0'. 
 #' 
 #' @examples 
 #'  \dontrun{
-#' 
-#'  
-#' 
+#'
 #'  x <- sample(0:10, 10, replace=TRUE)
-#'  data.frame(x=x, r=eventrank(x, 5) ) %>% arrange(x)
+#'  data.frame(x=x, r=eventrank(x, 5) ) 
 #' 
 #'  } 
 #' 
 #' 
 #' 
 #' @export
-eventrank <- function(x, cutoff=0){
+eventrank <- function(x, cutpoint=0){
 	N <- length(x)
-	left <- dense_rank(x[x < cutoff]*(-1))*(-1)
-	right <- dense_rank(x[x > cutoff])
+	left <- dense_rank(x[x < cutpoint]*(-1))*(-1)
+	right <- dense_rank(x[x > cutpoint])
 	ranks <- rep(NA, N)
-	ranks[x < cutoff] <- left
-	ranks[x > cutoff] <- right
-	ranks[x == cutoff] <- 0
+	ranks[x < cutpoint] <- left
+	ranks[x > cutpoint] <- right
+	ranks[x == cutpoint] <- 0
 	return(ranks)
 	}

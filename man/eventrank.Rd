@@ -2,28 +2,26 @@
 % Please edit documentation in R/eventrank.R
 \name{eventrank}
 \alias{eventrank}
-\title{Creates a vector of ranks from the left and right of a cutoff}
+\title{Creates a vector of ranks from the left and right of a cutpoint}
 \usage{
-eventrank(x, cutoff = 0)
+eventrank(x, cutpoint = 0)
 }
 \arguments{
 \item{x}{a vector to be ranked}
 
-\item{cutoff}{a scalar number used as cutoff (zero by default)}
+\item{cutpoint}{a scalar number used as cut-point (zero by default)}
 }
 \value{
-vector of ranks. If an element in x is equal to the cutoff, it is assigned '0'.
+vector of ranks. If an element in x is equal to the cut-point, it is assigned '0'.
 }
 \description{
-Creates a vector of ranks from the left and right of a cutoff
+Creates a vector of ranks from the left and right of a cutpoint
 }
 \examples{
  \dontrun{
 
- 
-
  x <- sample(0:10, 10, replace=TRUE)
- data.frame(x=x, r=eventrank(x, 5) ) \%>\% arrange(x)
+ data.frame(x=x, r=eventrank(x, 5) ) 
 
  } 
 

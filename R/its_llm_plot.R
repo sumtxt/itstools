@@ -1,16 +1,17 @@
-#' Plots ITS Samples 
+#' Plot the Estimation and Placebo Sample
 #'
-#' \code{its_plot_samples} ... 
+#' \code{its_llm_plot} helps to visualize which data points are used to estimate the intercept shift 
+#' at the cut-point and the placebo estimates.  
 #'
-#'  
 #' @param df (required) \code{data.frame} containing all variables 
-#' @param rvar (required) a running variable in \code{df}
-#' @param outcome (required) the outcome variable in \code{df}
-#' @param bw bandwidth selection on the scale of the \code{rvar}
-#' @param donut length of the period in after the cutpoint that is not used for the estimation 
+#' @param rvar (required) the name of the running variable in \code{df}
+#' @param outcome (required) the name of the outcome variable in \code{df} 
+#' @param trend include a linear term ('lin'), a quadratic term ('quad') or no trend at all ('none')?
+#' @param bwL bandwidth selection to the left of the cut-point on the scale of \code{rvar}
+#' @param bwR bandwidth selection to the right of the cut-point on the scale of \code{rvar}
+#' @param donut length of the period after the cut-point for which the data are dropped (on the scale of \code{rvar}).
 #' 
-#' @details 
-#' tbd.
+#' 
 #' 
 #' @examples 
 #'  \dontrun{
@@ -19,7 +20,7 @@
 #'   treat <- as.numeric(eventmonth >= 0)
 #'   y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
 #'   df <- data.frame(y=y, eventmonth=eventmonth)
-#'   its_plot_samples(df, rvar="eventmonth", outcome="y", bwL=2,bwR=2, donut=0)
+#'   its_llm_plot(df, rvar="eventmonth", outcome="y", bwL=2,bwR=2, donut=0)
 #' 
 #' }
 #' 
@@ -27,8 +28,10 @@
 #'	
 #' 
 #' 
+#' @seealso \code{\link{its_llm_placebo}}, \code{\link{its_llm}}.
+#' 
 #' @export
-its_plot_samples <- function(df, rvar, outcome, bwL, bwR, donut){
+its_llm_plot <- function(df, rvar, outcome, bwL, bwR, donut){
 	df <- as.data.frame(df)
 	pset <- make_permut_set(df, rvar, bwL, bwR, donut)
 	df_ <- make_donut_df(df, rvar=rvar, donut=donut)

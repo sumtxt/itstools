@@ -4,19 +4,16 @@
 \name{itstools-package}
 \alias{itstools}
 \alias{itstools-package}
-\title{ITS Tool Box}
+\title{ITS Toolbox}
 \description{
-Estimates via Local Linear Regression
+Interrupted Time Series Toolbox (ITS Toolbox)
 }
 \details{
-Feedback is very welcome!
-
-
 \tabular{ll}{
 	Package: \tab itstools \cr
 	Type: \tab Package\cr
 	Version: \tab 0.0.1.0\cr
-	Date: \tab 2017-02-20\cr
+	Date: \tab 2017-02-26\cr
 	License: \tab  GPL-3\cr
 	}
 }

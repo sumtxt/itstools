@@ -2,29 +2,47 @@
 % Please edit documentation in R/its_loess.R
 \name{its_loess}
 \alias{its_loess}
-\title{ITS Estimates via Local Polynomial Regression}
+\title{Estimates via Local Polynomial Regression}
 \usage{
 its_loess(df, rvar, outcome, span = 0.8, degree = 1, othervar = NULL,
-  only_estimates = TRUE)
+  only_estimates = TRUE, na.action = "na.omit")
 }
 \arguments{
 \item{df}{(required) \code{data.frame} containing all variables}
 
-\item{rvar}{(required) a running variable in \code{df}}
+\item{rvar}{(required) the name of the running variable in \code{df}}
 
-\item{outcome}{(required) the outcome variable in \code{df}}
+\item{outcome}{(required) the name of the outcome variable in \code{df}}
 
-\item{trend}{can be 'lin' or 'quad' (linear or quadratic)}
+\item{span}{either a scalar or a vector of length 2 for the span to be used to the left and right of the cut-point (passed to \code{loess})}
 
-\item{bw}{bandwidth selection on the scale of the \code{rvar}}
+\item{degree}{the degree of the polynomial passed to \code{loess}}
 
-\item{donut}{length of the period in after the cutpoint that is not used for the estimation}
+\item{othervar}{vector of variable names that will be included into the returned \code{data.frame} (if \code{only_estimate=FALSE}).}
+
+\item{na.action}{parameter passed on to \code{loess} about how to handle missing values}
+
+\item{only_estimate}{if \code{TRUE} only returns the estimates at the cut-point (default)}
+}
+\value{
+If \code{only_estimate=TRUE} a \code{data.frame} with a single row and entries for the point estimate of the intercept shift (\code{diff.est}), 
+standard error (\code{diff.se}), t-statistic (\code{diff.tstat}), p-value (\code{diff.pval}) as well as the degree and span used in the
+estimation. If \code{only_estimate=FALSE}, a \code{data.frame} that contains the variables as named in \code{rvar,outcome,othervar} as 
+well as the predicted values (\code{yhat*}), standard errors (\code{yhat*.se}) and upper/lower bound of the 95\% confidence interval (based on a normal distribution)
+(\code{yhat*.lo},\code{yhat*hi}) from the \code{\link{loess}} regressions to the left (*=0) and to the 
+right (*=1) of the cut-point.
 }
 \description{
-\code{its_llm} Estimates change in time series via local linear regression
+\code{its_loess} estimates the intercept shift of a time series at a cut-point.
 }
 \details{
+This function estimates two local polynomial regressions via \code{\link{loess}} to the left and 
+right of the cut-point at zero. The predicted values from the regressions are used to form an 
+estimate of the intercept shift at the cut-point. The reported t-statistic and p-value is based 
+on a standard Welch's t-test with unequal variances. 
 
+As span increases, the regression becomes a linear regression with a linear (degree=1) or quadratic trend term (degree=2).
+The loess parameters are set such that the surface and statistics are computed exactly, i.e. \code{loess.control(surface='direct', statistics='exact')}.
 }
 \examples{
  \dontrun{
@@ -35,10 +53,15 @@ its_loess(df, rvar, outcome, span = 0.8, degree = 1, othervar = NULL,
   	df <- data.frame(y=y, eventmonth=eventmonth)
   	its_loess(df, rvar="eventmonth", outcome="y") 		
 
+		m <- its_loess(df, rvar="eventmonth", outcome="y", only_estimate=FALSE)
+		with(m, plot(eventmonth, y)) 		
+	 	with(m, lines(eventmonth, yhat0, col='blue'))
+		with(m, lines(eventmonth, yhat1, col='blue'))
+
 		}
 
 }
-\references{
-
+\seealso{
+\code{\link{loess}}.
 }
 
