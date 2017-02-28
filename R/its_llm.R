@@ -51,7 +51,7 @@ its_llm <- function(df, rvar, outcome, trend="none", bwL=Inf, bwR=Inf, donut=0){
 	if ( !(trend %in% c("none", "lin", "quad")) ) stop("Parameter 'trend' must be either 'none', 'lin' or 'quad'.")
 	if ( trend=="none" ) spec <- paste(outcome, "~ treat",sep="")
 	if ( trend=="lin" ) spec <- paste(outcome, " ~ treat * ",rvar, sep="")
-	if ( trend=="quad" ) spec <- paste(outcome, " ~ treat * (", rvar, " + I(", rvar, ")^2)", sep="")
+	if ( trend=="quad" ) spec <- paste(outcome, " ~ treat * (", rvar, " + I(", rvar, "^2))", sep="")
 	NL <- sum(df[df[,'inSample']==TRUE,'treat']==0)
 	NR <- sum(df[df[,'inSample']==TRUE,'treat']==1)
 	if (NL==0 | NR==0) return(data.frame(est=NA, lo=NA, hi=NA, se=NA, pval=NA, Nleft=NL, Nright=NR))
