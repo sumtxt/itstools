@@ -4,7 +4,7 @@
 \alias{its_loess}
 \title{Estimates via Local Polynomial Regression}
 \usage{
-its_loess(df, rvar, outcome, donutvar = NULL, span = 0.8, degree = 1,
+its_loess(df, rvar, outcome, span = 0.8, degree = 1, donut = 0,
   othervar = NULL, only_estimates = TRUE, na.action = "na.omit")
 }
 \arguments{
@@ -14,9 +14,11 @@ its_loess(df, rvar, outcome, donutvar = NULL, span = 0.8, degree = 1,
 
 \item{outcome}{(required) the name of the outcome variable in \code{df}}
 
-\item{span}{either a scalar or a vector of length 2 for the span to be used to the left and right of the cut-point (passed to \code{loess})}
+\item{span}{either a scalar or a vector of length 2 for the span to be used to the left and right of the cut-point.}
 
-\item{degree}{the degree of the polynomial passed to \code{loess}}
+\item{degree}{either a scalar or a vector of length 2 defining the degree of the polynomial to the left and right of the cut-point.}
+
+\item{donut}{either a scalar or a vector of length 2 defining the length of the period to the left (right) of the cut-point for which the data are dropped (on the scale of \code{rvar}).}
 
 \item{othervar}{vector of variable names that will be included into the returned \code{data.frame} (if \code{only_estimate=FALSE}).}
 
@@ -49,7 +51,7 @@ The loess parameters are set such that the surface and statistics are computed e
 	
   	eventmonth <- -12:12
   	treat <- as.numeric(eventmonth >= 0)
-  	y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
+  	y <- 1 + (1 * eventmonth) + treat*10 + rnorm(length(eventmonth))
   	df <- data.frame(y=y, eventmonth=eventmonth)
   	its_loess(df, rvar="eventmonth", outcome="y") 		
 

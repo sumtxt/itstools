@@ -4,7 +4,7 @@
 \alias{its_llm_plot}
 \title{Plot the Estimation and Placebo Sample}
 \usage{
-its_llm_plot(df, rvar, outcome, bwL, bwR, donut)
+its_llm_plot(df, rvar, outcome, bw, donut = 0)
 }
 \arguments{
 \item{df}{(required) \code{data.frame} containing all variables}
@@ -13,11 +13,9 @@ its_llm_plot(df, rvar, outcome, bwL, bwR, donut)
 
 \item{outcome}{(required) the name of the outcome variable in \code{df}}
 
-\item{bwL}{bandwidth selection to the left of the cut-point on the scale of \code{rvar}}
+\item{bw}{either a scalar or a vector of length 2 defining the bandwidth to the left (right) of the cut-point on the scale of \code{rvar}}
 
-\item{bwR}{bandwidth selection to the right of the cut-point on the scale of \code{rvar}}
-
-\item{donut}{length of the period after the cut-point for which the data are dropped (on the scale of \code{rvar}).}
+\item{donut}{either a scalar or a vector of length 2 defining the length of the period to the left (right) of the cut-point for which the data are dropped (on the scale of \code{rvar}).}
 
 \item{trend}{include a linear term ('lin'), a quadratic term ('quad') or no trend at all ('none')?}
 }
@@ -27,12 +25,13 @@ at the cut-point and the placebo estimates.
 }
 \examples{
  \dontrun{
-
-  eventmonth <- -12:12
-  treat <- as.numeric(eventmonth >= 0)
-  y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
-  df <- data.frame(y=y, eventmonth=eventmonth)
-  its_llm_plot(df, rvar="eventmonth", outcome="y", bwL=2,bwR=2, donut=0)
+ 
+  N <- 21
+  time <- seq(-1,1,length.out=N)
+  treat <- as.numeric(time >= 0)
+  y <- 1 + time + treat*1 + rnorm(N,0,0.25)
+  df <- data.frame(y=y, time=time)
+  its_llm_plot(df, rvar="time", outcome="y", bw=0.25)
 
 }
 

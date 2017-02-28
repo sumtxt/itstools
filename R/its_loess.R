@@ -5,8 +5,9 @@
 #' @param df (required) \code{data.frame} containing all variables 
 #' @param rvar (required) the name of the running variable in \code{df}
 #' @param outcome (required) the name of the outcome variable in \code{df} 
-#' @param span either a scalar or a vector of length 2 for the span to be used to the left and right of the cut-point (passed to \code{loess})
-#' @param degree the degree of the polynomial passed to \code{loess}
+#' @param span either a scalar or a vector of length 2 for the span to be used to the left and right of the cut-point.
+#' @param degree either a scalar or a vector of length 2 defining the degree of the polynomial to the left and right of the cut-point.
+#' @param donut either a scalar or a vector of length 2 defining the length of the period to the left (right) of the cut-point for which the data are dropped (on the scale of \code{rvar}).
 #' @param othervar vector of variable names that will be included into the returned \code{data.frame} (if \code{only_estimate=FALSE}).
 #' @param only_estimate if \code{TRUE} only returns the estimates at the cut-point (default)
 #' @param na.action parameter passed on to \code{loess} about how to handle missing values
@@ -34,7 +35,7 @@
 #'		
 #'   	eventmonth <- -12:12
 #'   	treat <- as.numeric(eventmonth >= 0)
-#'   	y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
+#'   	y <- 1 + (1 * eventmonth) + treat*10 + rnorm(length(eventmonth))
 #'   	df <- data.frame(y=y, eventmonth=eventmonth)
 #'   	its_loess(df, rvar="eventmonth", outcome="y") 		
 #' 
@@ -46,48 +47,31 @@
 #' 		}
 #' 
 #' @export
-its_loess <- function(df,rvar,outcome, donutvar=NULL, span=0.8,degree=1,
+its_loess <- function(df,rvar,outcome, span=0.8, degree=1, donut=0, 
 	othervar=NULL, only_estimates=TRUE, na.action="na.omit"){ 
 
-	span <- unique(span)
-	degree <- unique(degree)
-	
-	if (length(span)==1){
-		spanL <- spanR <- span
-		}
-
-	if (length(span)==2){
-		spanL <- span[1]
-		spanR <- span[2]
-		}
-
-	if ( !(length(span) %in% c(1,2)) ) {
-		stop("Parameter 'span' must be either a scalar or a vector of length 2.")		
-	}
-
-	if ( length(degree)!=1 ) stop("Parameter 'degree' must be unique.")
+	list[spanL,spanR] <- parseLR(span)
+	list[degreeL,degreeR] <- parseLR(degree)
+	list[donutL,donutR] <- parseLR(donut)
 
 	df <- as.data.frame(df)	
+	df <- make_inSampleVar(df,rvar=rvar, bwL=Inf, bwR=Inf, donutL=donutL, donutR=donutR)
 
-	if (is.null(donutvar)) {
-		df[,'donutvar'] <- 0
-		donutvar = "donutvar"
-		}
-
-	dat <- df[,c(rvar, outcome, othervar, donutvar)]
+	dat <- df[,c(rvar, outcome, othervar,'inSample')]
 	dat$treat <- as.numeric(dat[,rvar] >= 0) 
 
 	dat[,'span'] <- paste(span, collapse="|")
-	dat[,'degree'] <- degree
+	dat[,'degree'] <- paste(degree, collapse="|")
+	dat[,'donut'] <- paste(donut, collapse="|")
 
 	spec <- paste(outcome, " ~ ",rvar, sep="")
 	param <- loess.control(surface='direct', statistics='exact')
 
 	set.seed(42)
-	m0 <- loess(spec, data=dat[dat[,'treat']==0 & dat[,donutvar]==0,], control=param, 
-		degree=degree, span=spanL, na.action=na.action)
-	m1 <- loess(spec, data=dat[dat[,'treat']==1 & dat[,donutvar]==0,], control=param, 
-		degree=degree, span=spanR, na.action=na.action)
+	m0 <- loess(spec, data=dat[dat[,'treat']==0 & dat[,'inSample']==1,], control=param, 
+		degree=degreeL, span=spanL, na.action=na.action)
+	m1 <- loess(spec, data=dat[dat[,'treat']==1 & dat[,'inSample']==1,], control=param, 
+		degree=degreeR, span=spanR, na.action=na.action)
 	
 	yhat0 <- predict(m0, se=TRUE, newdata=dat[dat[,rvar]<=0,rvar] )
 	yhat1 <- predict(m1, se=TRUE, newdata=dat[dat[,rvar]>=0,rvar] )
@@ -110,11 +94,13 @@ its_loess <- function(df,rvar,outcome, donutvar=NULL, span=0.8,degree=1,
 	
 	if (only_estimates==TRUE) {
 		res <- na.omit(res)
-		res$degree <- degree
-		res$span <- span
+		res$degree <- paste(degree, collapse="|")
+		res$span <- paste(span, collapse="|")
+		res$donut <- paste(donut, collapse="|")
 		rownames(res) <- NULL
 		return(res)
 		}
 	else return(cbind(dat, res))
 
 	}
+

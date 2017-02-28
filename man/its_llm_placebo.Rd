@@ -4,7 +4,7 @@
 \alias{its_llm_placebo}
 \title{Placebo Estimates via Local Linear Regression with user-selected bandwidth}
 \usage{
-its_llm_placebo(df, rvar, outcome, trend = "none", bwL, bwR, donut = 0,
+its_llm_placebo(df, rvar, outcome, trend = "none", bw, donut = 0,
   nsim = 200)
 }
 \arguments{
@@ -16,11 +16,9 @@ its_llm_placebo(df, rvar, outcome, trend = "none", bwL, bwR, donut = 0,
 
 \item{trend}{include a linear term ('lin'), a quadratic term ('quad') or no trend at all ('none')?}
 
-\item{bwL}{bandwidth selection to the left of the cut-point on the scale of \code{rvar}}
+\item{bw}{either a scalar or a vector of length 2 defining the bandwidth to the left (right) of the cut-point on the scale of \code{rvar}}
 
-\item{bwR}{bandwidth selection to the right of the cut-point on the scale of \code{rvar}}
-
-\item{donut}{length of the period after the cut-point for which the data are dropped (on the scale of \code{rvar}).}
+\item{donut}{either a scalar or a vector of length 2 defining the length of the period to the left (right) of the cut-point for which the data are dropped (on the scale of \code{rvar}).}
 
 \item{nsim}{if the number of potential placebo estimates is larger than \code{nsim}, 
 only a random sample of \code{nsim} estimates is formed.}
@@ -43,15 +41,16 @@ such that a local linear regression with the specified bandwidth can be estimate
 visualize the implied interval from which placebo estimates are formed.
 }
 \examples{
- \dontrun{
-	
-  	eventmonth <- -12:12
-  	treat <- as.numeric(eventmonth >= 0)
-  	y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
-  	df <- data.frame(y=y, eventmonth=eventmonth)
-  	its_llm_placebo(df, rvar="eventmonth", outcome="y", trend='lin', bwL=4,bwR=4, donut=0) 		
+\dontrun{
 
-		}
+  N <- 21
+  time <- seq(-1,1,length.out=N)
+  treat <- as.numeric(time >= 0)
+  y <- 1 + time + treat*1 + rnorm(N,0,0.25)
+  df <- data.frame(y=y, time=time)
+  its_llm_placebo(df, rvar="time", outcome="y", bw=0.25)
+
+}
 
 }
 \seealso{

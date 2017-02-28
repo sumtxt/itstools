@@ -4,8 +4,8 @@
 \alias{its_llm}
 \title{Estimates via Local Linear Regression with user-selected bandwidth}
 \usage{
-its_llm(df, rvar, outcome, trend = "none", bwL = Inf, bwR = Inf,
-  donut = 0)
+its_llm(df, rvar, outcome, trend = "none", bw = Inf, donut = 0,
+  verbose = 0)
 }
 \arguments{
 \item{df}{(required) \code{data.frame} containing all variables}
@@ -16,16 +16,16 @@ its_llm(df, rvar, outcome, trend = "none", bwL = Inf, bwR = Inf,
 
 \item{trend}{include a linear term ('lin'), a quadratic term ('quad') or no trend at all ('none')?}
 
-\item{bwL}{bandwidth selection to the left of the cut-point on the scale of \code{rvar}}
+\item{bw}{either a scalar or a vector of length 2 defining the bandwidth to the left (right) of the cut-point on the scale of \code{rvar}}
 
-\item{bwR}{bandwidth selection to the right of the cut-point on the scale of \code{rvar}}
+\item{donut}{either a scalar or a vector of length 2 defining the length of the period to the left (right) of the cut-point for which the data are dropped (on the scale of \code{rvar}).}
 
-\item{donut}{length of the period after the cut-point for which the data are dropped (on the scale of \code{rvar}).}
+\item{verbose}{set to any value other than zero to show which data points are included in the estimation}
 }
 \value{
 \code{data.frame} with a single row and entries for the point estimate (\code{est}), 95\% confidence interval (\code{lo,hi}), 
 standard error (\code{se}), p-value (\code{pval}) and the number of data points to the left/right of the cut-point used in the 
- estimation (\code{Nleft,Nright}).
+estimation (\code{Nleft,Nright}).
 }
 \description{
 \code{its_llm} estimates the intercept shift of a time series at a cut-point.
@@ -43,15 +43,16 @@ When no values for \code{trend}, \code{bwL}, \code{bwR} and \code{donut} are sup
 difference in means pooling all available data to the left/right of the cut-point.
 }
 \examples{
- \dontrun{
+\dontrun{
 	
-  	eventmonth <- -12:12
-  	treat <- as.numeric(eventmonth >= 0)
-  	y <- 1 + (1 * eventmonth) + treat*2 + rnorm(length(eventmonth))
-  	df <- data.frame(y=y, eventmonth=eventmonth)
-  	its_llm(df, rvar="eventmonth", outcome="y", trend='lin', bwL=4,bwR=4, donut=0) 		
+  N <- 21
+  time <- seq(-1,1,length.out=N)
+  treat <- as.numeric(time >= 0)
+  y <- 1 + time + treat*1 + rnorm(N,0,0.25)
+  df <- data.frame(y=y, time=time)
+  its_llm(df, rvar="time", outcome="y", bw=0.25)
 
-		}
+}
 
 }
 \seealso{
