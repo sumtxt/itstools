@@ -4,8 +4,8 @@
 \alias{its_loess}
 \title{Estimates via Local Polynomial Regression}
 \usage{
-its_loess(df, rvar, outcome, span = 0.8, degree = 1, othervar = NULL,
-  only_estimates = TRUE, na.action = "na.omit")
+its_loess(df, rvar, outcome, donutvar = NULL, span = 0.8, degree = 1,
+  othervar = NULL, only_estimates = TRUE, na.action = "na.omit")
 }
 \arguments{
 \item{df}{(required) \code{data.frame} containing all variables}

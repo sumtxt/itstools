@@ -46,7 +46,7 @@
 #' 		}
 #' 
 #' @export
-its_loess <- function(df,rvar,outcome,span=0.8,degree=1,
+its_loess <- function(df,rvar,outcome, donutvar=NULL, span=0.8,degree=1,
 	othervar=NULL, only_estimates=TRUE, na.action="na.omit"){ 
 
 	span <- unique(span)
@@ -68,7 +68,13 @@ its_loess <- function(df,rvar,outcome,span=0.8,degree=1,
 	if ( length(degree)!=1 ) stop("Parameter 'degree' must be unique.")
 
 	df <- as.data.frame(df)	
-	dat <- df[,c(rvar, outcome, othervar)]
+
+	if (is.null(donutvar)) {
+		df[,'donutvar'] <- 0
+		donutvar = "donutvar"
+		}
+
+	dat <- df[,c(rvar, outcome, othervar, donutvar)]
 	dat$treat <- as.numeric(dat[,rvar] >= 0) 
 
 	dat[,'span'] <- paste(span, collapse="|")
@@ -78,9 +84,9 @@ its_loess <- function(df,rvar,outcome,span=0.8,degree=1,
 	param <- loess.control(surface='direct', statistics='exact')
 
 	set.seed(42)
-	m0 <- loess(spec, data=dat[dat[,'treat']==0,], control=param, 
+	m0 <- loess(spec, data=dat[dat[,'treat']==0 & dat[,donutvar]==0,], control=param, 
 		degree=degree, span=spanL, na.action=na.action)
-	m1 <- loess(spec, data=dat[dat[,'treat']==1,], control=param, 
+	m1 <- loess(spec, data=dat[dat[,'treat']==1 & dat[,donutvar]==0,], control=param, 
 		degree=degree, span=spanR, na.action=na.action)
 	
 	yhat0 <- predict(m0, se=TRUE, newdata=dat[dat[,rvar]<=0,rvar] )
